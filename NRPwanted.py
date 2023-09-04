@@ -3,11 +3,11 @@ import requests
 import csv
 
 source = requests.get('https://www.niagarapolice.ca/en/news-and-events/Niagara-s-Wanted.aspx').text
-soup = BeautifulSoup(source, 'lxml')
+soup = BeautifulSoup(source, 'lxml') # use lxml parser
 
-csv_file = open('NRP10.csv', 'w')
-csv_writer = csv.writer(csv_file)
-csv_writer.writerow(['Name', 'Age', 'Location', 'Crime', 'Date'])
+csv_file = open('NRP10.csv', 'w') 
+csv_writer = csv.writer(csv_file) # write the result into csv file
+csv_writer.writerow(['Name', 'Age', 'Location', 'Crime', 'Date']) # these are the data we need to collect
 
 for match in soup.find_all('tr',{"class":['row','altrow']}):
     try:
