@@ -9,9 +9,11 @@ csv_file = open('NRP10.csv', 'w')
 csv_writer = csv.writer(csv_file) # write the result into csv file
 csv_writer.writerow(['Name', 'Age', 'Location', 'Crime', 'Date']) # these are the data we need to collect
 
-for match in soup.find_all('tr',{"class":['row','altrow']}):
+for match in soup.find_all('tr',{"class":['row','altrow']}): # extract all text in row or altrow class
+    
     try:
-        result = match.text.strip()
+        result = match.text.strip() 
+        print(result)
         info = result.splitlines()
         name = info[0]
         year = info [1]
@@ -19,6 +21,7 @@ for match in soup.find_all('tr',{"class":['row','altrow']}):
         crime = info [3:-1]
         date = info[-1]
         print(info)
+        break
     except Exception as e:
         result = None
         info = None
