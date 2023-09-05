@@ -5,14 +5,16 @@ import csv
 source = requests.get('https://www.niagarapolice.ca/en/news-and-events/Niagara-s-Wanted.aspx').text
 soup = BeautifulSoup(source, 'lxml') # use lxml parser
 
-csv_file = open('NRP10.csv', 'w') 
+csv_file = open('NRP1.csv', 'w') 
 csv_writer = csv.writer(csv_file) # write the result into csv file
 csv_writer.writerow(['Name', 'Age', 'Location', 'Crime', 'Date']) # these are the data we need to collect
 
 for match in soup.find_all('tr',{"class":['row','altrow']}): # extract all text in row or altrow class
+
     
     try:
-        result = match.text.strip() 
+        #result = match.text.strip() 
+        result = match.get_text(separator="\n").strip() #replace <br> with new line, this will help us to select items from info list
         print(result)
         info = result.splitlines()
         name = info[0]
@@ -21,7 +23,6 @@ for match in soup.find_all('tr',{"class":['row','altrow']}): # extract all text 
         crime = info [3:-1]
         date = info[-1]
         print(info)
-        break
     except Exception as e:
         result = None
         info = None
