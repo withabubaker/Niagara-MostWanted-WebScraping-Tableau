@@ -12,10 +12,10 @@ Utilized the pandas library to explore and clean the data, then virtualized the 
 6. Numpy
 
 ## Files:
-1- NPRwanted.py: contains the codes for extracting the data from the NRPS website.
-2- NPR.csv: contains the data extracted from NRPS (before cleaning)
-3- dataCleaning.ipynb: exploring and cleaning the data.
-4- Final_dfwithID.csv: contains the data after cleaning (used for Tableau virtualization)
+- NPRwanted.py: contains the codes for extracting the data from the NRPS website.
+- NPR.csv: contains the data extracted from NRPS (before cleaning).
+- dataCleaning.ipynb: exploring and cleaning the data.
+- Final_dfwithID.csv: contains the data after cleaning (used for Tableau virtualization)
 
 
 
