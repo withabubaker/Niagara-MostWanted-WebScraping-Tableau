@@ -4,6 +4,10 @@ In this project, I used web scraping techniques to pull the data from the Niagar
 Utilized the pandas library to explore and clean the data, then virtualized the results using Tableau. 
 
 ### Libraries
+1. BeautifulSoup
+2. Requests
+3. Pandas
+4. Numpy
 
 
 
