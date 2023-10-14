@@ -1,5 +1,7 @@
 # Niagara Most Wanted Using WebScraping and Tablea
 
+![alt text](https://github.com/withabubaker/NiagaraWanted-WebScraping-Tableau/blob/main/img/NRPS-Wanted-logo.jpg)
+
 In this project, I used web scraping techniques to pull the data from the Niagara Region Police Service [website](https://www.niagarapolice.ca/en/news-and-events/Niagara-s-Wanted.aspx) for the most wanted criminals.
 Utilized the pandas library to explore and clean the data, then virtualized the results using Tableau. 
 
