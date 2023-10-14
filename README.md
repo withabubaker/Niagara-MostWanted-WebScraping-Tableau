@@ -26,6 +26,9 @@ Utilized the pandas library to explore and clean the data, then virtualized the 
 - ***Failed to comply wit realeas oreder***, is the mosted commited crime
 - Most of criminals age is between 30 and 39.
 
+  ## Tableau Dashboard
+
+Here is the link to Tableau [dashboard](https://public.tableau.com/app/profile/mohammed.abubaker/viz/NRPSMostWantedOct2023/Dashboard1?publish=yes)
 
 
 
