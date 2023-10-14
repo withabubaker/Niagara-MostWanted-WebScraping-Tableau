@@ -20,5 +20,11 @@ Utilized the pandas library to explore and clean the data, then virtualized the 
 - **Final_dfwithID.csv**: contains the data after cleaning (used for Tableau virtualization)
 
 
+## Results
+
+- Niagara city has the most wanted criminlas, 37 wwanted, then Welland city with 30 wanted.
+- ***Failed to comply wit realeas oreder***, is the mosted commited crime
+
+
 
 
