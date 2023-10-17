@@ -1,4 +1,4 @@
-# Niagara Most Wanted Using WebScraping and Tableau
+# Niagara Most Wanted Using Web Scraping and Tableau
 
 ![alt text](https://github.com/withabubaker/NiagaraWanted-WebScraping-Tableau/blob/main/img/NRPS-Wanted-logo.jpg)
 
