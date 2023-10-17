@@ -6,9 +6,9 @@
 
 ## Project Goals:
 
-- Use web scraping techniques to pull the data from the Niagara Region Police Service [website](https://www.niagarapolice.ca/en/news-and-events/Niagara-s-Wanted.aspx) for the most wanted criminals.
+- Used web scraping techniques to pull the data from the Niagara Region Police Service [website](https://www.niagarapolice.ca/en/news-and-events/Niagara-s-Wanted.aspx) for the most wanted criminals.
 - Utilized the pandas and numpy libraries to explore and clean the data.
-- Use Tableau to build an informative dashboard.
+- Used Tableau to build an informative dashboard.
 
 ## Libraries & Tools:
 
