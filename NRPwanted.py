@@ -5,7 +5,7 @@ import csv
 source = requests.get('https://www.niagarapolice.ca/en/news-and-events/Niagara-s-Wanted.aspx').text
 soup = BeautifulSoup(source, 'lxml') # use lxml parser
 
-csv_file = open('NRP.csv', 'w') 
+csv_file = open('NRP2.csv', 'w') 
 csv_writer = csv.writer(csv_file) # write the result into csv file
 csv_writer.writerow(['Name', 'Age', 'Location', 'Crime', 'Date']) # these are the data we need to collect
 
