@@ -3,11 +3,15 @@ import requests
 import csv
 import datetime
 import pandas as pd
+import pyodbc as odbc
+from sqlalchemy import create_engine
 
 current_time = datetime.datetime.now()
 formatted_time = current_time.strftime('%Y%m%d_%H%M%S')
+formatted_time_sql = current_time.strftime('%Y%m%d')
 file_name = f'NRP_{formatted_time}.csv'
 to_csv_file_name = f'afterclean_{formatted_time}.csv'
+table_name = f'datafor_{formatted_time_sql}'
 
 
 #csv_file = open(f'NRP_{formatted_time}.csv', 'w') 
@@ -45,6 +49,9 @@ def scrap_data():
         csv_writer.writerow([name,year,location,crime,date])
     print(f'Extract completed... filename{file_name}')  
     csv_file.close()
+
+
+                 ######## clean the data ######## 
 
 def clean_data():
     #### 1- load the data into df ####
@@ -102,18 +109,38 @@ def clean_data():
 
     return df
 
-def load_to_csv(df_data):
-     
+                    ######## Load the Data ########
+
+def load_to_csv(df_data): 
     df_data.to_csv(to_csv_file_name, index=False)
 
 
-### call the functions - ETL Piplines
+def load_to_sqldb(df_data):
+    server_name = 'MYMAD\SQLEXPRESS'
+    database = 'NRPS'
+ 
+    connection_url = (
+        f"mssql+pyodbc://{server_name}/{database}?"
+        f"trusted_connection=yes&driver=ODBC+Driver+17+for+SQL+Server"
+    )
 
+    engine = create_engine(connection_url)
+    df_data.to_sql(table_name, con=engine, if_exists='replace', index=False)
+    
+
+
+             ######## call the functions - ETL Piplines ########
+
+    
 ## 1 Extract the data
 scrap_data()
 
 ## 2 load the data into df
-clean_data()
+df = clean_data()
 
 ## 3 load the data in SQL database
 load_to_csv(df)
+
+### -- load data into sql server
+load_to_sqldb(df)
+### -- use chatgpt to identify gender from name
