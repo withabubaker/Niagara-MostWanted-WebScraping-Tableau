@@ -107,9 +107,39 @@ def clean_data():
     df['Date']=df['Date'].str.lower().str.replace('updated:','')
     df['Date']=df['Date'].str.lower().str.replace('updated','')
 
+#### 5- Clean the Crime Column ####
+    ##df['Crime'] = df['Crime'].apply(lambda x: [x.strip(" '") for x in x]) # keep as list
+    df['Crime'] = df['Crime'].apply(lambda x: ' '.join(x.strip(" '") for x in x)) # keep as strin
+
+   
+
+    '''
+
+     df['Crime'] = df['Crime'].apply(
+         lambda lst: [
+              ''.join(char for char in item.replace("''", '')if char.isalnum() or char == ',')
+              for item in lst
+         ]
+    )
+
+    
+        match = ["'']","''","[''","''","'']","''","''","'']","'\\xa0'","'\\xa0'", "" ''""]
+        prefixes = ["'23-","'23-","'22-","'20","'21","'16-","'19-","'18-","'updated","'added"]
+        suffixes = ["yrs'", "Yrs'","yrs.'","yrs old'"]
+        for i in range(len(df)):
+            lst = df['Crime'][i]
+            for i in lst:
+                if i.strip() in match or i.lower().strip().startswith(tuple(prefixes)) or i.lower().strip().endswith(tuple(suffixes)):
+                    lst.remove(i)
+        
+            
+    '''
     return df
+    
 
                     ######## Load the Data ########
+
+
 
 def load_to_csv(df_data): 
     df_data.to_csv(to_csv_file_name, index=False)
@@ -138,9 +168,12 @@ scrap_data()
 ## 2 load the data into df
 df = clean_data()
 
+
 ## 3 load the data in SQL database
 load_to_csv(df)
 
 ### -- load data into sql server
 load_to_sqldb(df)
+
+### python library 'gender_guesser'
 ### -- use chatgpt to identify gender from name
