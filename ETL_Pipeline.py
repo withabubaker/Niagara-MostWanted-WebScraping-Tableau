@@ -5,6 +5,7 @@ import datetime
 import pandas as pd
 import pyodbc as odbc
 from sqlalchemy import create_engine
+import gender_guesser.detector as gender
 
 current_time = datetime.datetime.now()
 formatted_time = current_time.strftime('%Y%m%d_%H%M%S')
@@ -122,7 +123,7 @@ def clean_data():
          ]
     )
 
-    
+
         match = ["'']","''","[''","''","'']","''","''","'']","'\\xa0'","'\\xa0'", "" ''""]
         prefixes = ["'23-","'23-","'22-","'20","'21","'16-","'19-","'18-","'updated","'added"]
         suffixes = ["yrs'", "Yrs'","yrs.'","yrs old'"]
@@ -137,6 +138,11 @@ def clean_data():
     return df
     
 
+def det_gender(x):
+     detector = gender.Detector(case_sensitive=False)
+     x['gender'] = x['Name'].apply(lambda x: detector.get_gender(x.split()[0]))
+     return df
+     
                     ######## Load the Data ########
 
 
@@ -168,12 +174,12 @@ scrap_data()
 ## 2 load the data into df
 df = clean_data()
 
-
+df_gender = det_gender(df)
 ## 3 load the data in SQL database
-load_to_csv(df)
+load_to_csv(df_gender)
 
 ### -- load data into sql server
-load_to_sqldb(df)
+load_to_sqldb(df_gender)
 
 ### python library 'gender_guesser'
 ### -- use chatgpt to identify gender from name
