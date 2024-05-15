@@ -7,6 +7,7 @@ import pyodbc as odbc
 from sqlalchemy import create_engine
 import gender_guesser.detector as gender
 
+
 current_time = datetime.datetime.now()
 formatted_time = current_time.strftime('%Y%m%d_%H%M%S')
 formatted_time_sql = current_time.strftime('%Y%m%d')
