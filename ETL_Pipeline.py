@@ -6,19 +6,19 @@ import pandas as pd
 import pyodbc as odbc
 from sqlalchemy import create_engine
 import gender_guesser.detector as gender
+import re
 
 
-current_time = datetime.datetime.now()
-formatted_time = current_time.strftime('%Y%m%d_%H%M%S')
-formatted_time_sql = current_time.strftime('%Y%m%d')
+current_time = datetime.datetime.now()  
+formatted_time = current_time.strftime('%Y%m%d_%H%M%S') # use to generate new cvs file name
+formatted_time_sql = current_time.strftime('%Y%m%d') # use to generate new SQL table
 file_name = f'NRP_{formatted_time}.csv'
 to_csv_file_name = f'afterclean_{formatted_time}.csv'
 table_name = f'datafor_{formatted_time_sql}'
 
 
-#csv_file = open(f'NRP_{formatted_time}.csv', 'w') 
+###### 1. SCRAPE THE DATA FROM NRPS WEBSITE ######
 
-## scrap the data from NRPS website
 def scrap_data():
     
     source = requests.get('https://www.niagarapolice.ca/en/news-and-events/Niagara-s-Wanted.aspx').text
@@ -53,32 +53,30 @@ def scrap_data():
     csv_file.close()
 
 
-                 ######## clean the data ######## 
+######## 2. CLEAN THE DATA ######## 
 
 def clean_data():
-    #### 1- load the data into df ####
     df = pd.read_csv(file_name, encoding='windows-1252')
 
-    #### 2- fill out age Null values from Crime column #####
-    # update null values in Age column from Crime column
-    df['Crime']=df['Crime'].str.split(',')
-    
-    for i in range(len(df)):
-            if df.isnull().iloc[i,1]:
-                    df.iloc[i,1]= df['Crime'][i][0]
-    
-    # Remove unwatned chars from Age column
-    char_remove = ['[', '\'', 'Yrs','yrs', '.','Years','old', '\\xa0','`' ]
-    for char in char_remove:
-        df['Age']=df['Age'].str.replace(char, '')
-    
-    #Make sure no white spaces
-    df['Age']=df['Age'].str.strip()
+    ## for some rows the Age and location values are included in the Crime column, here we will extract the age value 
+    df['Crime']=df['Crime'].apply(lambda x: eval(x)) # convert crime to actual list
 
+    for i in range(len(df)): # extract age value from Crime list
+        if df.isnull().iloc[i,1]:
+            for x in range(len(df['Crime'][i])):
+                items = df.iloc[i,3][x]
+                items = items.lower()
+                if 'yrs' in items or 'years' in items:
+                    parts = items.split()
+                    for part in parts:
+                        if part.isdigit():
+                            df.iloc[i,1] = part
 
-    #### 3- Fill Out Location Null Values From the Crime Column ####
-    # update null values in Location column from Crime column                
-    for i in range(len(df)):
+     
+    df['Age']=df['Age'].str.strip() # remove white spaces
+    df['Age']= df['Age'].apply(lambda x: ''.join(re.findall(r'\d+', x)) ) ## Now need to remove string from Age column 
+                    
+    for i in range(len(df)): # update null values in Location column from Crime column
             if df.isnull().iloc[i,2]:
                     df.iloc[i,2]= df['Crime'][i][3]
 
@@ -111,7 +109,7 @@ def clean_data():
 
 #### 5- Clean the Crime Column ####
     ##df['Crime'] = df['Crime'].apply(lambda x: [x.strip(" '") for x in x]) # keep as list
-    df['Crime'] = df['Crime'].apply(lambda x: ' '.join(x.strip(" '") for x in x)) # keep as strin
+    ##df['Crime'] = df['Crime'].apply(lambda x: ' '.join(x.strip(" '") for x in x)) # keep as strin
 
    
 
