@@ -41,13 +41,13 @@ def scrap_data():
                 else:
                     pass
             year = info [1]
-            location = info [2]
+            Location = info [2]
             crime = info [3:-1]
             date = info[-1]
             print(info)
         except Exception as e:
             result = None
-        csv_writer.writerow([name,year,location,crime,date])
+        csv_writer.writerow([name,year,Location,crime,date])
     print(f'Extract completed... filename{file_name}')  
     csv_file.close()
 
@@ -58,10 +58,11 @@ def clean_data():
     df = pd.read_csv(file_name, encoding='windows-1252')
 
 
-    ## for some rows the Age and location values are included in the Crime column, here we will extract the age value 
+    ## for some rows the Age and Location values are included in the Crime column, here we will extract the age value
     df['Crime']=df['Crime'].apply(lambda x: eval(x)) # convert crime to actual list
 
-    for i in range(len(df)): # extract age value from Crime list
+    #### 1- Clean the Age Column ####
+    for i in range(len(df)):
         if df.isnull().iloc[i,1]:
             for x in range(len(df['Crime'][i])):
                 items = df.iloc[i,3][x]
@@ -75,9 +76,9 @@ def clean_data():
 
      
     df['Age']=df['Age'].str.strip() # remove white spaces
-    df['Age']= df['Age'].apply(lambda x: ''.join(re.findall(r'\d+', x)) ) ## Now need to remove string from Age column 
+    df['Age']= df['Age'].apply(lambda x: ''.join(re.findall(r'\d+', x)) ) ## Now need to remove strings from Age column 
 
- 
+    #### 2- Clean the Location Column ####
     patterns = ['Niagara','Catharine','Pelham', 'Fort','Walpole','Fixed', 'Welland','Wainfleet','Colborne','Grimsby',
                 'Lincoln','NFA','NOTL','Sherbrooke','Thorold','Montreal','Lachute','Burlington','Hamilton','Scarborough']
     comp_pattern = re.compile('|'.join(patterns), re.IGNORECASE)
@@ -88,10 +89,10 @@ def clean_data():
                 if comp_pattern.search(item):
                     df.iloc[i,2] = item
             
-    #Make sure no white spaces
-    df['Location']=df['Location'].str.strip()
+    
+    df['Location']=df['Location'].str.strip() #Make sure no white spaces
 
-    # List all unique locations
+    # Normalize Location names
     df.loc[df['Location'].apply(str.lower).str.contains('fall'), 'Location'] = 'Niagara Falls'
     df.loc[df['Location'].apply(str.lower).str.contains('cath'), 'Location'] = 'St.Catharines'
     df.loc[df['Location'].apply(str.lower).str.contains('fix'),'Location'] = 'No Fixed Address'
@@ -102,38 +103,41 @@ def clean_data():
     df.loc[df['Location'].apply(str.lower).str.contains('notl|lake'),'Location'] = 'Niagara-on-the-Lake'
     df.loc[df['Location'].apply(str.lower).str.contains('pole'),'Location'] = 'Walpole Island'
 
-    #### 4- Clean the Date Column ####
+    #### 3- Clean the Date Column ####
     df['Date']=df['Date'].str.strip()
     df['Date']=df['Date'].str.lower().str.replace('updated:','')
     df['Date']=df['Date'].str.lower().str.replace('updated','')
 
-#### 5- Clean the Crime Column ####
-    ##df['Crime'] = df['Crime'].apply(lambda x: [x.strip(" '") for x in x]) # keep as list
-    ##df['Crime'] = df['Crime'].apply(lambda x: ' '.join(x.strip(" '") for x in x)) # keep as strin
+    #### 4- Clean the Crime Column ####
+    
 
-   
+    df['Commited_Crime'] = ''
+    patterns = ['Fai','Shoplifting','Theft', 'Instrument','Assault','Break', 'Possession',
+                'Threat','Breach','Mischief','Traffick','Kidnap','Warrant','Fraud','Surety','Impaired','Arson','Unlawful']
+    comp_pattern = re.compile('|'.join(patterns), re.IGNORECASE)
+    for i in range(len(df)):
+        for x in range(len(df['Crime'][i])):
+            item = df.iloc[i,3][x]
+            if comp_pattern.search(item):
+                df.loc[i, 'Commited_Crime'] = item
+                break
+    
+    
+    df['Commited_Crime']=df['Commited_Crime'].str.strip()
 
-    '''
+    # Normalize the Crimes
+    df.loc[df['Commited_Crime'].apply(str.lower).str.contains('fail to attend court|fail to appear'), 'Commited_Crime'] = 'Fail To Attend Court'
+    df.loc[df['Commited_Crime'].apply(str.lower).str.contains('fail to attend fingerprint'), 'Commited_Crime'] = 'Fail to Attend Fingerprint'
+    #df.loc[df['Commited_Crime'].apply(str.lower).str.contains('fail to comply probation|fail to comply w/probation|fail to comply with probation'),'Commited_Crime'] = 'Fail to Comply Probation'
+    df.loc[df['Commited_Crime'].apply(str.lower).str.contains('fail to comply'),'Commited_Crime'] = 'Fail to Comply'
+    #df.loc[df['Commited_Crime'].apply(str.lower).str.contains('fail to comply with recog'),'Commited_Crime'] = 'Fail to Comply with Recog'
+    #df.loc[df['Commited_Crime'].apply(str.lower).str.contains('Fail to Comply with Release order'),'Commited_Crime'] = 'Fail to Comply with Release Order'
+    df.loc[df['Commited_Crime'].apply(str.lower).str.contains('flight police dangerous operation'),'Commited_Crime'] = 'Flight Police Dangerous Operation'
+    #df.loc[df['Commited_Crime'].apply(str.lower).str.contains('notl|lake'),'Commited_Crime'] = 'Niagara-on-the-Lake'
+    #df.loc[df['Commited_Crime'].apply(str.lower).str.contains('pole'),'Commited_Crime'] = 'Walpole Island'
 
-     df['Crime'] = df['Crime'].apply(
-         lambda lst: [
-              ''.join(char for char in item.replace("''", '')if char.isalnum() or char == ',')
-              for item in lst
-         ]
-    )
+    df.drop('Crime', axis=1, inplace=True)
 
-
-        match = ["'']","''","[''","''","'']","''","''","'']","'\\xa0'","'\\xa0'", "" ''""]
-        prefixes = ["'23-","'23-","'22-","'20","'21","'16-","'19-","'18-","'updated","'added"]
-        suffixes = ["yrs'", "Yrs'","yrs.'","yrs old'"]
-        for i in range(len(df)):
-            lst = df['Crime'][i]
-            for i in lst:
-                if i.strip() in match or i.lower().strip().startswith(tuple(prefixes)) or i.lower().strip().endswith(tuple(suffixes)):
-                    lst.remove(i)
-        
-            
-    '''
     return df
 
 def det_gender(x):
