@@ -8,7 +8,6 @@ from sqlalchemy import create_engine
 import gender_guesser.detector as gender
 import re
 
-
 current_time = datetime.datetime.now()  
 formatted_time = current_time.strftime('%Y%m%d_%H%M%S') # use to generate new cvs file name
 formatted_time_sql = current_time.strftime('%Y%m%d') # use to generate new SQL table
@@ -58,6 +57,7 @@ def scrap_data():
 def clean_data():
     df = pd.read_csv(file_name, encoding='windows-1252')
 
+
     ## for some rows the Age and location values are included in the Crime column, here we will extract the age value 
     df['Crime']=df['Crime'].apply(lambda x: eval(x)) # convert crime to actual list
 
@@ -71,23 +71,23 @@ def clean_data():
                     for part in parts:
                         if part.isdigit():
                             df.iloc[i,1] = part
+                            break
 
      
     df['Age']=df['Age'].str.strip() # remove white spaces
     df['Age']= df['Age'].apply(lambda x: ''.join(re.findall(r'\d+', x)) ) ## Now need to remove string from Age column 
-                    
-    for i in range(len(df)): # update null values in Location column from Crime column
-            if df.isnull().iloc[i,2]:
-                    df.iloc[i,2]= df['Crime'][i][3]
 
-    # remove location for Crime list
-    df['Crime'] = df.apply(lambda row: [x for x in row.Crime if x != row.Location],axis=1)
-
-    # Remove unwatned chars from Location column
-    char_remove = ['[', '\'','.', '\\xa0','`' ]
-    for char in char_remove:
-        df['Location']=df['Location'].str.replace(char, '')
-        
+ 
+    patterns = ['Niagara','Catharine','Pelham', 'Fort','Walpole','Fixed', 'Welland','Wainfleet','Colborne','Grimsby',
+                'Lincoln','NFA','NOTL','Sherbrooke','Thorold','Montreal','Lachute','Burlington','Hamilton','Scarborough']
+    comp_pattern = re.compile('|'.join(patterns), re.IGNORECASE)
+    for i in range(len(df)):
+        if df.isnull().iloc[i,2]:
+            for x in range(len(df['Crime'][i])):
+                item = df.iloc[i,3][x]
+                if comp_pattern.search(item):
+                    df.iloc[i,2] = item
+            
     #Make sure no white spaces
     df['Location']=df['Location'].str.strip()
 
@@ -135,7 +135,6 @@ def clean_data():
             
     '''
     return df
-    
 
 def det_gender(x):
      detector = gender.Detector(case_sensitive=False)
