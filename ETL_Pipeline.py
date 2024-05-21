@@ -128,13 +128,25 @@ def clean_data():
     # Normalize the Crimes
     df.loc[df['Commited_Crime'].apply(str.lower).str.contains('fail to attend court|fail to appear'), 'Commited_Crime'] = 'Fail To Attend Court'
     df.loc[df['Commited_Crime'].apply(str.lower).str.contains('fail to attend fingerprint'), 'Commited_Crime'] = 'Fail to Attend Fingerprint'
-    #df.loc[df['Commited_Crime'].apply(str.lower).str.contains('fail to comply probation|fail to comply w/probation|fail to comply with probation'),'Commited_Crime'] = 'Fail to Comply Probation'
+    df.loc[df['Commited_Crime'].apply(str.lower).str.contains('assault'),'Commited_Crime'] = 'Assault'
     df.loc[df['Commited_Crime'].apply(str.lower).str.contains('fail to comply'),'Commited_Crime'] = 'Fail to Comply'
-    #df.loc[df['Commited_Crime'].apply(str.lower).str.contains('fail to comply with recog'),'Commited_Crime'] = 'Fail to Comply with Recog'
-    #df.loc[df['Commited_Crime'].apply(str.lower).str.contains('Fail to Comply with Release order'),'Commited_Crime'] = 'Fail to Comply with Release Order'
+    df.loc[df['Commited_Crime'].apply(str.lower).str.contains('break'),'Commited_Crime'] = 'Break and Enter'
+    df.loc[df['Commited_Crime'].apply(str.lower).str.contains('shoplifting'),'Commited_Crime'] = 'Shoplifting'
     df.loc[df['Commited_Crime'].apply(str.lower).str.contains('flight police dangerous operation'),'Commited_Crime'] = 'Flight Police Dangerous Operation'
-    #df.loc[df['Commited_Crime'].apply(str.lower).str.contains('notl|lake'),'Commited_Crime'] = 'Niagara-on-the-Lake'
-    #df.loc[df['Commited_Crime'].apply(str.lower).str.contains('pole'),'Commited_Crime'] = 'Walpole Island'
+    df.loc[df['Commited_Crime'].apply(str.lower).str.contains('fraud'),'Commited_Crime'] = 'Fraud'
+    df.loc[df['Commited_Crime'].apply(str.lower).str.contains('mischief'),'Commited_Crime'] = 'Mischief'
+    df.loc[df['Commited_Crime'].apply(str.lower).str.contains('breach'),'Commited_Crime'] = 'Breach Probation'
+    df.loc[df['Commited_Crime'].apply(str.lower).str.contains('allegation'),'Commited_Crime'] = 'Allegation of Breach Conditional Sentence Order'
+    df.loc[df['Commited_Crime'].apply(str.lower).str.contains('allegation'),'Commited_Crime'] = 'Allegation of Breach Conditional Sentence Order'
+    df.loc[df['Commited_Crime'].apply(str.lower).str.contains('kidnap'),'Commited_Crime'] = 'Kidnapping'
+    df.loc[df['Commited_Crime'].apply(str.lower).str.contains('theft of motor'),'Commited_Crime'] = 'Theft of Motor Vehicle'
+    df.loc[df['Commited_Crime'].apply(str.lower).str.contains('theft under|theft over'),'Commited_Crime'] = 'Theft'
+    df.loc[df['Commited_Crime'].apply(str.lower).str.contains('traffick'),'Commited_Crime'] = 'Trafficking'
+    df.loc[df['Commited_Crime'].apply(str.lower).str.contains('utter'),'Commited_Crime'] = 'Utter Threats'
+    df.loc[df['Commited_Crime'].apply(str.lower).str.contains('possession of property'),'Commited_Crime'] = 'Possession of Property Obtained by Crime'
+    df.loc[df['Commited_Crime'].apply(str.lower).str.contains('possession over'),'Commited_Crime'] = 'Possession'
+
+
 
     df.drop('Crime', axis=1, inplace=True)
 
