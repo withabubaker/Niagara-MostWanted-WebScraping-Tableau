@@ -143,6 +143,10 @@ def clean_data():
 def det_gender(x):
      detector = gender.Detector(case_sensitive=False)
      x['gender'] = x['Name'].apply(lambda x: detector.get_gender(x.split()[0]))
+     x['gender'] = x['gender'].replace('andy', 'unknown')
+     x['gender'] = x['gender'].replace('mostly_male', 'male')
+     x['gender'] = x['gender'].replace('mostly_female', 'female')
+
      return df
      
                     ######## Load the Data ########
