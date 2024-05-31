@@ -152,6 +152,9 @@ def clean_data():
 
     return df
 
+    ######## 3. Feature Engineering ########
+
+    ## add gender feature
 def det_gender(x):
      detector = gender.Detector(case_sensitive=False)
      x['gender'] = x['Name'].apply(lambda x: detector.get_gender(x.split()[0]))
@@ -160,15 +163,18 @@ def det_gender(x):
      x['gender'] = x['gender'].replace('mostly_female', 'female')
 
      return df
-     
-                    ######## Load the Data ########
 
 
+                    
+
+
+    ######## 4. Load Data ########
+    ## load to CSV
 
 def load_to_csv(df_data): 
     df_data.to_csv(to_csv_file_name, index=False)
 
-
+    ## load to SQL DB
 def load_to_sqldb(df_data):
     server_name = 'MYMAD\SQLEXPRESS'
     database = 'NRPS'
@@ -183,7 +189,8 @@ def load_to_sqldb(df_data):
     
 
 
-             ######## call the functions - ETL Piplines ########
+    
+    ######## call the functions - ETL Piplines ########
 
     
 ## 1 Extract the data
@@ -192,12 +199,11 @@ scrap_data()
 ## 2 load the data into df
 df = clean_data()
 
+## 3 assign gender feature
 df_gender = det_gender(df)
-## 3 load the data in SQL database
+
+## 4 load the data to CSV
 load_to_csv(df_gender)
 
-### -- load data into sql server
+## 5 load data to SQL DB
 load_to_sqldb(df_gender)
-
-### python library 'gender_guesser'
-### -- use chatgpt to identify gender from name
