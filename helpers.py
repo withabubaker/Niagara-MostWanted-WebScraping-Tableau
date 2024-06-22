@@ -1,5 +1,7 @@
 from bs4 import BeautifulSoup
 import csv
+import pandas as pd
+import re
 
 # 1. Extract the raw data from NRPS website
 def scrap_data(url, file_name):  
@@ -30,3 +32,106 @@ def scrap_data(url, file_name):
         csv_writer.writerow([name,year,Location,crime,date])
     print(f'Extract completed... filename{file_name}')  
     csv_file.close()
+
+
+### 2. Transform the date
+
+# i. clean the age column
+def clean_age(file_name):
+    df = pd.read_csv(file_name, encoding='windows-1252')
+
+    ## for some rows the Age and Location values are included in the Crime column, here we will extract the age value
+    df['Crime']=df['Crime'].apply(lambda x: eval(x)) # convert crime to actual list
+    for i in range(len(df)):
+        if df.isnull().iloc[i,1]:
+            for x in range(len(df['Crime'][i])):
+                items = df.iloc[i,3][x]
+                items = items.lower()
+                if 'yrs' in items or 'years' in items:
+                    parts = items.split()
+                    for part in parts:
+                        if part.isdigit():
+                            df.iloc[i,1] = part
+                            break
+
+    df['Age']=df['Age'].str.strip() # remove white spaces
+    df['Age']= df['Age'].apply(lambda x: ''.join(re.findall(r'\d+', x)) ) # remove strings from Age column 
+
+    return df
+
+# ii. Clean the location column
+def clean_location(df_age):
+    patterns = ['Niagara','Catharine','Pelham', 'Fort','Walpole','Fixed', 'Welland','Wainfleet','Colborne','Grimsby',
+                'Lincoln','NFA','NOTL','Sherbrooke','Thorold','Montreal','Lachute','Burlington','Hamilton','Scarborough']
+    comp_pattern = re.compile('|'.join(patterns), re.IGNORECASE)
+    for i in range(len(df_age)):
+        if df_age.isnull().iloc[i,2]:
+            for x in range(len(df_age['Crime'][i])):
+                item = df_age.iloc[i,3][x]
+                if comp_pattern.search(item):
+                    df_age.iloc[i,2] = item
+    df_age['Location']=df_age['Location'].str.strip() #Make sure no white spaces
+    # Normalize Location names
+    df_age.loc[df_age['Location'].apply(str.lower).str.contains('fall'), 'Location'] = 'Niagara Falls'
+    df_age.loc[df_age['Location'].apply(str.lower).str.contains('cath'), 'Location'] = 'St.Catharines'
+    df_age.loc[df_age['Location'].apply(str.lower).str.contains('fix'),'Location'] = 'No Fixed Address'
+    df_age.loc[df_age['Location'].apply(str.lower).str.contains('port'),'Location'] = 'Port Colborne'
+    df_age.loc[df_age['Location'].apply(str.lower).str.contains('lha'),'Location'] = 'Pelham'
+    df_age.loc[df_age['Location'].apply(str.lower).str.contains('fort'),'Location'] = 'Fort Erie'
+    df_age.loc[df_age['Location'].apply(str.lower).str.contains('fte'),'Location'] = 'Fort Erie'
+    df_age.loc[df_age['Location'].apply(str.lower).str.contains('notl|lake'),'Location'] = 'Niagara-on-the-Lake'
+    df_age.loc[df_age['Location'].apply(str.lower).str.contains('pole'),'Location'] = 'Walpole Island'
+
+    return df_age
+
+# iii. Clean the date column
+def clean_date(df_loc):
+    df_loc['Date']=df_loc['Date'].str.strip()
+    df_loc['Date']=df_loc['Date'].str.lower().str.replace('updated:','')
+    df_loc['Date']=df_loc['Date'].str.lower().str.replace('updated','')
+
+    return df_loc
+
+# IV. Clean the crime column
+    
+def clean_crime(df_date):
+    df_date['Commited_Crime'] = ''
+    patterns = ['Fai','Shoplifting','Theft', 'Instrument','Assault','Break', 'Possession',
+                'Threat','Breach','Mischief','Traffick','Kidnap','Warrant','Fraud','Surety','Impaired','Arson','Unlawful']
+    comp_pattern = re.compile('|'.join(patterns), re.IGNORECASE)
+    for i in range(len(df_date)):
+        for x in range(len(df_date['Crime'][i])):
+            item = df_date.iloc[i,3][x]
+            if comp_pattern.search(item):
+                df_date.loc[i, 'Commited_Crime'] = item
+                break
+    
+    
+    df_date['Commited_Crime']=df_date['Commited_Crime'].str.strip()
+
+    # Normalize the Crimes
+    df_date.loc[df_date['Commited_Crime'].apply(str.lower).str.contains('fail to attend court|fail to appear'), 'Commited_Crime'] = 'Fail To Attend Court'
+    df_date.loc[df_date['Commited_Crime'].apply(str.lower).str.contains('fail to attend fingerprint'), 'Commited_Crime'] = 'Fail to Attend Fingerprint'
+    df_date.loc[df_date['Commited_Crime'].apply(str.lower).str.contains('assault'),'Commited_Crime'] = 'Assault'
+    df_date.loc[df_date['Commited_Crime'].apply(str.lower).str.contains('fail to comply'),'Commited_Crime'] = 'Fail to Comply'
+    df_date.loc[df_date['Commited_Crime'].apply(str.lower).str.contains('break'),'Commited_Crime'] = 'Break and Enter'
+    df_date.loc[df_date['Commited_Crime'].apply(str.lower).str.contains('shoplifting'),'Commited_Crime'] = 'Shoplifting'
+    df_date.loc[df_date['Commited_Crime'].apply(str.lower).str.contains('flight police dangerous operation'),'Commited_Crime'] = 'Flight Police Dangerous Operation'
+    df_date.loc[df_date['Commited_Crime'].apply(str.lower).str.contains('fraud'),'Commited_Crime'] = 'Fraud'
+    df_date.loc[df_date['Commited_Crime'].apply(str.lower).str.contains('mischief'),'Commited_Crime'] = 'Mischief'
+    df_date.loc[df_date['Commited_Crime'].apply(str.lower).str.contains('breach'),'Commited_Crime'] = 'Breach Probation'
+    df_date.loc[df_date['Commited_Crime'].apply(str.lower).str.contains('allegation'),'Commited_Crime'] = 'Allegation of Breach Conditional Sentence Order'
+    df_date.loc[df_date['Commited_Crime'].apply(str.lower).str.contains('allegation'),'Commited_Crime'] = 'Allegation of Breach Conditional Sentence Order'
+    df_date.loc[df_date['Commited_Crime'].apply(str.lower).str.contains('kidnap'),'Commited_Crime'] = 'Kidnapping'
+    df_date.loc[df_date['Commited_Crime'].apply(str.lower).str.contains('theft of motor'),'Commited_Crime'] = 'Theft of Motor Vehicle'
+    df_date.loc[df_date['Commited_Crime'].apply(str.lower).str.contains('theft under|theft over'),'Commited_Crime'] = 'Theft'
+    df_date.loc[df_date['Commited_Crime'].apply(str.lower).str.contains('traffick'),'Commited_Crime'] = 'Trafficking'
+    df_date.loc[df_date['Commited_Crime'].apply(str.lower).str.contains('utter'),'Commited_Crime'] = 'Utter Threats'
+    df_date.loc[df_date['Commited_Crime'].apply(str.lower).str.contains('possession of property'),'Commited_Crime'] = 'Possession of Property Obtained by Crime'
+    df_date.loc[df_date['Commited_Crime'].apply(str.lower).str.contains('possession over'),'Commited_Crime'] = 'Possession'
+
+
+
+    df.drop('Crime', axis=1, inplace=True)
+
+    return df

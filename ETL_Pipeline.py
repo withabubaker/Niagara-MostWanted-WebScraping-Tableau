@@ -19,16 +19,6 @@ to_csv_file_name = f'afterclean_{formatted_time}.csv'
 table_name = f'datafor_{formatted_time_sql}'
 
 
-###### 1. SCRAPE THE DATA FROM NRPS WEBSITE ######
-
-
-
-scrap_data(source, file_name)
-    
-    
-   
-
-
 ######## 2. CLEAN THE DATA ######## 
 
 def clean_data():
@@ -168,9 +158,15 @@ def load_to_sqldb(df_data):
 
     
 ## 1 Extract the data
-scrap_data()
+scrap_data(source, file_name)
 
-## 2 load the data into df
+## 2. Transform the date
+df_age = clean_age(file_name)
+df_location = clean_location(df_age)
+df_date = clean_date(df_location)
+df_crime = clean_crime(df_date)
+
+## 3. Load the data into df
 df = clean_data()
 
 ## 3 assign gender feature
