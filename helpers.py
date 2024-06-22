@@ -2,6 +2,8 @@ from bs4 import BeautifulSoup
 import csv
 import pandas as pd
 import re
+import gender_guesser.detector as gender
+from sqlalchemy import create_engine
 
 # 1. Extract the raw data from NRPS website
 def scrap_data(url, file_name):  
@@ -36,11 +38,10 @@ def scrap_data(url, file_name):
 
 ### 2. Transform the date
 
-# i. clean the age column
+# I. clean the age column
 def clean_age(file_name):
     df = pd.read_csv(file_name, encoding='windows-1252')
-
-    ## for some rows the Age and Location values are included in the Crime column, here we will extract the age value
+    # for some rows the Age and Location values are included in the Crime column, here we will extract the age value
     df['Crime']=df['Crime'].apply(lambda x: eval(x)) # convert crime to actual list
     for i in range(len(df)):
         if df.isnull().iloc[i,1]:
@@ -59,7 +60,9 @@ def clean_age(file_name):
 
     return df
 
-# ii. Clean the location column
+
+
+# II. Clean the location column
 def clean_location(df_age):
     patterns = ['Niagara','Catharine','Pelham', 'Fort','Walpole','Fixed', 'Welland','Wainfleet','Colborne','Grimsby',
                 'Lincoln','NFA','NOTL','Sherbrooke','Thorold','Montreal','Lachute','Burlington','Hamilton','Scarborough']
@@ -84,7 +87,9 @@ def clean_location(df_age):
 
     return df_age
 
-# iii. Clean the date column
+
+
+# III. Clean the date column
 def clean_date(df_loc):
     df_loc['Date']=df_loc['Date'].str.strip()
     df_loc['Date']=df_loc['Date'].str.lower().str.replace('updated:','')
@@ -92,8 +97,9 @@ def clean_date(df_loc):
 
     return df_loc
 
+
+
 # IV. Clean the crime column
-    
 def clean_crime(df_date):
     df_date['Commited_Crime'] = ''
     patterns = ['Fai','Shoplifting','Theft', 'Instrument','Assault','Break', 'Possession',
@@ -130,8 +136,36 @@ def clean_crime(df_date):
     df_date.loc[df_date['Commited_Crime'].apply(str.lower).str.contains('possession of property'),'Commited_Crime'] = 'Possession of Property Obtained by Crime'
     df_date.loc[df_date['Commited_Crime'].apply(str.lower).str.contains('possession over'),'Commited_Crime'] = 'Possession'
 
+    df_date.drop('Crime', axis=1, inplace=True)
+
+    return df_date
 
 
-    df.drop('Crime', axis=1, inplace=True)
+# V. Add gender feature
+def get_gender(data):
+    detector = gender.Detector(case_sensitive=False)
+    data['gender'] = data['Name'].apply(lambda x: detector.get_gender(x.split()[0]))
+    data['gender'] = data['gender'].replace('andy', 'unknown')
+    data['gender'] = data['gender'].replace('mostly_male', 'male')
+    data['gender'] = data['gender'].replace('mostly_female', 'female')
 
-    return df
+    return data
+
+
+## 3. Load the data
+# I. Load the data to CSV file
+def load_to_csv(data, to_csv_file_name): 
+    data.to_csv(to_csv_file_name, index=False)
+
+# II. Load the data to SQL DB
+def load_to_sqldb(data, table_name):
+    server_name = 'MYMAD\SQLEXPRESS'
+    database = 'NRPS'
+ 
+    connection_url = (
+        f"mssql+pyodbc://{server_name}/{database}?"
+        f"trusted_connection=yes&driver=ODBC+Driver+17+for+SQL+Server"
+    )
+
+    engine = create_engine(connection_url)
+    data.to_sql(table_name, con=engine, if_exists='replace', index=False)
