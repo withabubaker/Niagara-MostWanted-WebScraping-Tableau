@@ -3,11 +3,14 @@ import requests
 import csv
 import datetime
 import pandas as pd
-import pyodbc as odbc
+#import pyodbc as odbc
 from sqlalchemy import create_engine
 import gender_guesser.detector as gender
 import re
+from helpers import *
 
+
+source = requests.get('https://www.niagarapolice.ca/en/news-and-events/Niagara-s-Wanted.aspx').text
 current_time = datetime.datetime.now()  
 formatted_time = current_time.strftime('%Y%m%d_%H%M%S') # use to generate new cvs file name
 formatted_time_sql = current_time.strftime('%Y%m%d') # use to generate new SQL table
@@ -18,38 +21,12 @@ table_name = f'datafor_{formatted_time_sql}'
 
 ###### 1. SCRAPE THE DATA FROM NRPS WEBSITE ######
 
-def scrap_data():
-    
-    source = requests.get('https://www.niagarapolice.ca/en/news-and-events/Niagara-s-Wanted.aspx').text
-    soup = BeautifulSoup(source, 'lxml') # use lxml parser
-    csv_file = open(file_name, 'w') 
-    csv_writer = csv.writer(csv_file) # write the result into csv file
-    csv_writer.writerow(['Name', 'Age', 'Location', 'Crime', 'Date']) # these are the data we need to collect
 
-    for match in soup.find_all('tr',{"class":['row','altrow']}): # extract all text in row or altrow class
-        try:
-            #result = match.text.strip() 
-            result = match.get_text(separator="\n").strip() #replace <br> with new line, this will help us to select items from info list
-            #print(result)
-            info = result.splitlines()
-            name = info[0]
-            for i in range(1,1,5):
-                if info[i] != '':
-                    year = info[i]
-                    i+=1
-                    break
-                else:
-                    pass
-            year = info [1]
-            Location = info [2]
-            crime = info [3:-1]
-            date = info[-1]
-            print(info)
-        except Exception as e:
-            result = None
-        csv_writer.writerow([name,year,Location,crime,date])
-    print(f'Extract completed... filename{file_name}')  
-    csv_file.close()
+
+scrap_data(source, file_name)
+    
+    
+   
 
 
 ######## 2. CLEAN THE DATA ######## 
@@ -163,9 +140,6 @@ def det_gender(x):
      x['gender'] = x['gender'].replace('mostly_female', 'female')
 
      return df
-
-
-                    
 
 
     ######## 4. Load Data ########
