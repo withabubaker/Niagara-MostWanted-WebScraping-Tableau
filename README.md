@@ -1,4 +1,4 @@
-# Analyze and Visualize Niagara Most Wanted Data Using Web Scraping and Tableau
+# Analyze and Visualize Niagara's Most Wanted Data Using Web Scraping and Tableau
 
 ![alt text](https://github.com/withabubaker/NiagaraWanted-WebScraping-Tableau/blob/main/img/NRPS-Wanted-logo.jpg)
 
@@ -15,11 +15,13 @@
 ## Libraries & Tools:
 
 1. Python 3.12.1
-2. Tableau
-3. BeautifulSoup
-4. Requests
-5. Pandas
-6. Numpy
+2. BeautifulSoup 4.12.3
+3. Requests 2.32.3
+4. Pandas 2.2.2
+5. Tableau
+6. MS SQL Express
+   
+
 
 ## Files:
 
