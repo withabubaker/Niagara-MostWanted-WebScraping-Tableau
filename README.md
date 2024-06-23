@@ -25,13 +25,13 @@
 
 ## Files:
 
-- ***ETL_Pipeline.py***: contains the codes for defining the variables and calling the ETL pipeline functions,
-- ***helpers.py***: contains the main functions for extracting, cleaning, and loading the data
-- ***requirements.txt***: contains the required libraries and packages
+- ***ETL_Pipeline.py***: Contains the code for defining the variables and calling the ETL pipeline functions.
+- ***helpers.py***: Contains the main functions for extracting, cleaning, and loading the data.
+- ***requirements.txt***: Lists the required libraries and packages.
 
 ## Tableau Dashboard
 
-Here is the link to the Tableau [Dashboard](https://public.tableau.com/app/profile/mohammed.abubaker/viz/MayCrimeReport/Dashboard1)
+Here is the link to the Tableau [dashboard](https://public.tableau.com/app/profile/mohammed.abubaker/viz/MayCrimeReport/Dashboard1).
 
 
 
