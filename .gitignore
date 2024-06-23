@@ -1,4 +1,3 @@
-test.txt
-Dockerfile
-General SQL Query.sql
-monthly_automation.bat
+# Ignore Python Cache files
+__pycache__/
+*.pyc
