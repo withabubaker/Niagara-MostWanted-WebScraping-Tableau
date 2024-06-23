@@ -6,7 +6,7 @@
 
 ## Project Goals:
 
-- Used web scraping techniques to pull the data from the Niagara Regional Police Service [website](https://www.niagarapolice.ca/en/news-and-events/Niagara-s-Wanted.aspx) for the most wanted criminals.
+- Used web scraping techniques to pull the data from the [Niagara Regional Police Service website](https://www.niagarapolice.ca/en/news-and-events/Niagara-s-Wanted.aspx) for the most wanted criminals.
 - Followed the ETL process (Extract, Transform, and Load).
 - Utilized the pandas library to explore and clean the data.
 - Loaded the results into CSV and SQL DB.
