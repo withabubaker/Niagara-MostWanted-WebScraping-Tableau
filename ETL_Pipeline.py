@@ -1,12 +1,5 @@
-#from bs4 import BeautifulSoup
 import requests
-#import csv
 import datetime
-#import pandas as pd
-#import pyodbc as odbc
-#from sqlalchemy import create_engine
-#import gender_guesser.detector as gender
-#import re
 from helpers import *
 
 
@@ -17,7 +10,6 @@ formatted_time_sql = current_time.strftime('%Y%m%d') # use to generate new SQL t
 file_name = f'NRP_{formatted_time}.csv'
 to_csv_file_name = f'afterclean_{formatted_time}.csv'
 table_name = f'datafor_{formatted_time_sql}'
-
 
     
 ######## Call the functions - ETL Piplines ########
