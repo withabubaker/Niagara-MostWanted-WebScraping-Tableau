@@ -25,21 +25,15 @@
 
 ## Files:
 
-- ***NPRwanted.py***: contains the codes for extracting the data from the NRPS website.
-- ***NPR.csv***: contains the data extracted from NRPS (before cleaning).
-- ***dataCleaning.ipynb***: exploring and cleaning the data.
-- ***Final_dfwithID.csv***: contains the data after cleaning (used for Tableau virtualization)
+- ***ETL_Pipeline.py***: contains the codes for defining the variables and calling the ETL pipeline functions,
+- ***helpers.py***: contains the main functions for extracting, cleaning, and loading the data
+- ***requirements.txt***: contains the required libraries and packages
 
 ## Tableau Dashboard
 
 Here is the link to the Tableau [Dashboard](https://public.tableau.com/app/profile/mohammed.abubaker/viz/NRPSMostWantedOct2023/Dashboard1?publish=yes)
 
 
-## Results:
-
-- ***Niagara city*** has the most wanted criminals, 37 wanted, then ***Welland city*** with 30 wanted.
-- ***Failed to comply with release order***, is the most committed crime
-- Most criminal's age is between 30 and 39.
 
 
 
