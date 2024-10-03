@@ -12,13 +12,13 @@ to_csv_file_name = f'afterclean_{formatted_time}.csv'
 table_name = f'datafor_{formatted_time_sql}'
 
     
-######## Call the functions - ETL Piplines ########
+######## Call the functions - ETL Pipeline ########
 
     
 ## 1 Extract the data
 scrap_data(source, file_name)
 
-## 2. Transform the date
+## 2. Transform the data
 df_age = clean_age(file_name)
 df_location = clean_location(df_age)
 df_date = clean_date(df_location)
