@@ -36,7 +36,7 @@ def scrap_data(url, file_name):
     csv_file.close()
 
 
-### 2. Transform the date
+### 2. Transform the data
 
 # I. clean the age column
 def clean_age(file_name):
